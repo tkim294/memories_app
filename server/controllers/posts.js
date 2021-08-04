@@ -1,5 +1,9 @@
+import express from 'express';
+
 import PostMessage from "../models/postMessage.js";
 import mongoose from 'mongoose';
+
+const router = express.Router();
 
 export const getPosts = async (req, res) => {
     const { page } = req.query;
@@ -105,3 +109,18 @@ export const getPost = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
+export const commentPost = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+
+    const post = await PostMessage.findById(id);
+
+    post.comments.push(value);
+
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+    
+    res.json(updatedPost);
+}
+
+export default router;
